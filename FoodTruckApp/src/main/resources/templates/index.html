@@ -1,0 +1,189 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Food Trucks</title>
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css">
+    <style>
+        #map {
+            height: 500px;
+            width: 100%;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1 class="mt-4">Food Trucks</h1>
+    <form id="searchForm">
+        <div class="form-group">
+            <input type="text" id="searchInput" class="form-control" placeholder="Search for food trucks...">
+        </div>
+        <button type="button" class="btn btn-primary" onclick="searchFoodTrucks()">Search</button>
+    </form>
+
+    <table class="table table-bordered mt-4">
+        <thead class="thead-dark">
+        <tr>
+            <th scope="col">Location ID</th>
+            <th scope="col">Applicant</th>
+            <th scope="col">Facility Type</th>
+            <th scope="col">CNN</th>
+            <th scope="col">Location Description</th>
+            <th scope="col">Address</th>
+            <th scope="col">Blocklot</th>
+            <th scope="col">Block</th>
+            <th scope="col">Lot</th>
+            <th scope="col">Permit</th>
+            <th scope="col">Status</th>
+            <th scope="col">Food Items</th>
+            <th scope="col">X</th>
+            <th scope="col">Y</th>
+            <th scope="col">Latitude</th>
+            <th scope="col">Longitude</th>
+            <th scope="col">Schedule</th>
+            <th scope="col">Days/Hours</th>
+            <th scope="col">NOI Sent</th>
+            <th scope="col">Approved</th>
+            <th scope="col">Received</th>
+            <th scope="col">Prior Permit</th>
+            <th scope="col">Expiration Date</th>
+            <th scope="col">Location</th>
+            <th scope="col">Fire Prevention Districts</th>
+            <th scope="col">Police Districts</th>
+            <th scope="col">Supervisor Districts</th>
+            <th scope="col">Zip Codes</th>
+            <th scope="col">Neighborhoods (Old)</th>
+        </tr>
+        </thead>
+        <tbody id="foodTrucksTableBody">
+        <tr th:each="truck : ${foodTrucks}">
+            <td th:text="${truck.locationid}">Location ID</td>
+            <td th:text="${truck.applicant}">Applicant</td>
+            <td th:text="${truck.facilitytype}">Facility Type</td>
+            <td th:text="${truck.cnn}">CNN</td>
+            <td th:text="${truck.locationdescription}">Location Description</td>
+            <td th:text="${truck.address}">Address</td>
+            <td th:text="${truck.blocklot}">Blocklot</td>
+            <td th:text="${truck.block}">Block</td>
+            <td th:text="${truck.lot}">Lot</td>
+            <td th:text="${truck.permit}">Permit</td>
+            <td th:text="${truck.status}">Status</td>
+            <td th:text="${truck.fooditems}">Food Items</td>
+            <td th:text="${truck.x}">X</td>
+            <td th:text="${truck.y}">Y</td>
+            <td th:text="${truck.latitude}">Latitude</td>
+            <td th:text="${truck.longitude}">Longitude</td>
+            <td th:text="${truck.schedule}">Schedule</td>
+            <td th:text="${truck.dayshours}">Days/Hours</td>
+            <td th:text="${truck.noisSent}">NOI Sent</td>
+            <td th:text="${truck.approved}">Approved</td>
+            <td th:text="${truck.received}">Received</td>
+            <td th:text="${truck.priorpermit}">Prior Permit</td>
+            <td th:text="${truck.expirationdate}">Expiration Date</td>
+            <td th:text="${truck.location}">Location</td>
+            <td th:text="${truck.firePreventionDistricts}">Fire Prevention Districts</td>
+            <td th:text="${truck.policeDistricts}">Police Districts</td>
+            <td th:text="${truck.supervisorDistricts}">Supervisor Districts</td>
+            <td th:text="${truck.zipCodes}">Zip Codes</td>
+            <td th:text="${truck.neighborhoodsOld}">Neighborhoods (Old)</td>
+            <!-- Hidden elements for JavaScript to access -->
+            <td style="display:none;" class="truck-lat" th:text="${truck.latitude}"></td>
+            <td style="display:none;" class="truck-lng" th:text="${truck.longitude}"></td>
+            <td style="display:none;" class="truck-applicant" th:text="${truck.applicant}"></td>
+        </tr>
+        </tbody>
+    </table>
+
+    <div id="map"></div>
+</div>
+
+<script src="https://maps.googleapis.com/maps/api/js?key=AIzaSyA_Z67VbfnsC9iJdnfYliz1gvJyDqls2Tw&callback=initMap" async defer></script>
+<script>
+    let map;
+
+    function initMap() {
+        map = new google.maps.Map(document.getElementById('map'), {
+            center: { lat: 37.7749, lng: -122.4194 },
+            zoom: 12
+        });
+    }
+
+    function searchFoodTrucks() {
+        const searchInput = document.getElementById('searchInput').value;
+        fetch(`/api/foodtrucks/search?query=${searchInput}`)
+            .then(response => response.json())
+            .then(data => {
+                const tableBody = document.getElementById('foodTrucksTableBody');
+                tableBody.innerHTML = '';
+                data.forEach(truck => {
+                    const row = document.createElement('tr');
+                    row.innerHTML = `
+                        <td>${truck.locationid}</td>
+                        <td>${truck.applicant}</td>
+                        <td>${truck.facilitytype}</td>
+                        <td>${truck.cnn}</td>
+                        <td>${truck.locationdescription}</td>
+                        <td>${truck.address}</td>
+                        <td>${truck.blocklot}</td>
+                        <td>${truck.block}</td>
+                        <td>${truck.lot}</td>
+                        <td>${truck.permit}</td>
+                        <td>${truck.status}</td>
+                        <td>${truck.fooditems}</td>
+                        <td>${truck.x}</td>
+                        <td>${truck.y}</td>
+                        <td>${truck.latitude}</td>
+                        <td>${truck.longitude}</td>
+                        <td>${truck.schedule}</td>
+                        <td>${truck.dayshours}</td>
+                        <td>${truck.noisSent}</td>
+                        <td>${truck.approved}</td>
+                        <td>${truck.received}</td>
+                        <td>${truck.priorpermit}</td>
+                        <td>${truck.expirationdate}</td>
+                        <td>${truck.location}</td>
+                        <td>${truck.firePreventionDistricts}</td>
+                        <td>${truck.policeDistricts}</td>
+                        <td>${truck.supervisorDistricts}</td>
+                        <td>${truck.zipCodes}</td>
+                        <td>${truck.neighborhoodsOld}</td>
+                        <td style="display:none;" class="truck-lat">${truck.latitude}</td>
+                        <td style="display:none;" class="truck-lng">${truck.longitude}</td>
+                        <td style="display:none;" class="truck-applicant">${truck.applicant}</td>
+                    `;
+                    tableBody.appendChild(row);
+                });
+                updateMapMarkers();
+            });
+    }
+
+    function updateMapMarkers() {
+        // Clear existing markers
+        map.markers = map.markers || [];
+        map.markers.forEach(marker => marker.setMap(null));
+        map.markers = [];
+
+        const lats = document.getElementsByClassName('truck-lat');
+        const lngs = document.getElementsByClassName('truck-lng');
+        const applicants = document.getElementsByClassName('truck-applicant');
+
+        for (let i = 0; i < lats.length; i++) {
+            const lat = parseFloat(lats[i].innerText);
+            const lng = parseFloat(lngs[i].innerText);
+            const applicant = applicants[i].innerText;
+
+            if (!isNaN(lat) && !isNaN(lng)) {
+                const latLng = { lat, lng };
+                const marker = new google.maps.Marker({
+                    position: latLng,
+                    map: map,
+                    title: applicant
+                });
+                map.markers.push(marker);
+            }
+        }
+    }
+</script>
+</body>
+</html>

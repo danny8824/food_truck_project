@@ -1,0 +1,8 @@
+com/example/foodtruckapp/service/FoodTruckService.class
+com/example/foodtruckapp/DataLoaderService.class
+com/example/foodtruckapp/DemoApplication.class
+com/example/foodtruckapp/model/FoodTruck.class
+com/example/foodtruckapp/repository/FoodTruckRepository.class
+com/example/foodtruckapp/controller/FoodTruckController.class
+com/example/foodtruckapp/controller/DataLoaderController.class
+com/example/foodtruckapp/controller/WebController.class
